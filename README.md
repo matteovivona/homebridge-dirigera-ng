@@ -14,6 +14,10 @@ Currently supports the following device types:
 
 - `light`
 - `blinds`
+- `leak sensor`
+- `motion sensor`
+- `outlet`
+- `contact sensor`
 
 ### Settings
 
@@ -36,7 +40,7 @@ A typical record in the Homebridge `config` should look like this:
       "host": "<ip>",
       "token": "<auth_token>",
       "name": "Living Room"
-    },
+    }
   ],
   "platform": "Dirigera"
 }

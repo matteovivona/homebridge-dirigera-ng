@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.17](https://github.com/uboness/homebridge-dirigera/compare/v0.1.16...v0.1.17) (2024-03-30)
+
+
+### Bug Fixes
+
+* removed `console.log` and replaced it with `log.debug` ([3b3021f](https://github.com/uboness/homebridge-dirigera/commit/3b3021f57612bcb815b8a5042f1456228c373baf))
+
 ## [0.1.16](https://github.com/uboness/homebridge-dirigera/compare/v0.1.15...v0.1.16) (2024-03-08)
 
 

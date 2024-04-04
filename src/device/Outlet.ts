@@ -36,7 +36,7 @@ export class Outlet extends DirigeraDevice<OutletAttributes> {
     update(attributes: OutletAttributes) {
         this.device.attributes = attributes;
         if (isBoolean(attributes.isOn)) {
-            this.accessory.getService(this.platform.Service.Lightbulb)!
+            this.accessory.getService(this.platform.Service.Outlet)!
                 .getCharacteristic(this.platform.Characteristic.On)
                 .updateValue(attributes.isOn, { fromDirigera: true });
         }

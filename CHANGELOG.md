@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.19](https://github.com/uboness/homebridge-dirigera/compare/v0.1.18...v0.1.19) (2024-04-04)
+
+
+### Bug Fixes
+
+* Outlet now works again ([af0e08b](https://github.com/uboness/homebridge-dirigera/commit/af0e08b29d30df15571e112496c987a3f9ee8e27))
+
 ## [0.1.18](https://github.com/uboness/homebridge-dirigera/compare/v0.1.17...v0.1.18) (2024-04-04)
 
 

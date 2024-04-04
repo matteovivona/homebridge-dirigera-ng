@@ -1,3 +1,4 @@
+import { SwitchAttributes, XDevice } from '../dirigera.js';
 import { DirigeraHub } from '../DirigeraHub.js';
 import { PlatformAccessory } from 'homebridge';
 import { Device } from 'dirigera';
@@ -5,10 +6,15 @@ import { LightAttributes } from 'dirigera/dist/src/types/device/Light.js';
 import { DirigeraPlatform } from '../DirigeraPlatform.js';
 import { isBoolean, isNumber } from '../common.js';
 import { DirigeraDevice } from './DirigeraDevice.js';
+import { Switch } from './Switch.js';
 
 export class Light extends DirigeraDevice<LightAttributes> {
 
     static readonly create = async (platform: DirigeraPlatform, hub: DirigeraHub, accessory: PlatformAccessory, device: Device): Promise<Light> => {
+        const asSwitch = hub.config.devices?.[device.id]?.asSwitch ?? false;
+        if (asSwitch) {
+            return Switch.create(platform, hub, accessory, device);
+        }
         return new Light(platform, hub, accessory, device);
     }
 

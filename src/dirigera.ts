@@ -2,7 +2,7 @@ import { Device } from 'dirigera';
 import {
     CommonDeviceAttributes,
     IdentifiableDeviceAttributes,
-    JoinableDeviceAttributes
+    JoinableDeviceAttributes, type OtaUpdatableDeviceAttributes
 } from 'dirigera/src/types/device/Device.js';
 
 import type { Room } from 'dirigera/src/types/Room.js';
@@ -23,4 +23,11 @@ export interface WaterSensor extends XDevice {
 export interface WaterSensorAttributes extends CommonDeviceAttributes, IdentifiableDeviceAttributes, JoinableDeviceAttributes {
     batteryPercentage: number,
     waterLeakDetected: boolean
+}
+
+export interface SwitchAttributes extends CommonDeviceAttributes, IdentifiableDeviceAttributes, JoinableDeviceAttributes, OtaUpdatableDeviceAttributes {
+    isOn: boolean
+    startupOnOff: 'startOn' | 'startPrevious'
+    identifyStarted: string
+    identifyPeriod: number
 }

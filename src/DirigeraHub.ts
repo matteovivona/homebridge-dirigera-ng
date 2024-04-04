@@ -232,7 +232,12 @@ export namespace DirigeraHub {
     export type Config = {
         host: string,
         token?: string,
-        name?: string
+        name?: string,
+        devices?: {
+            [id: string]: {
+                asSwitch?: boolean // only supported by: Light, Outlet
+            }
+        }
     };
 
     export type Info = Awaited<ReturnType<DirigeraClient['hub']['status']>>;

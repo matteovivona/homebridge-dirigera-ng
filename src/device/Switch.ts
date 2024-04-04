@@ -1,25 +1,21 @@
 import { Device } from 'dirigera';
 import { LightAttributes } from 'dirigera/dist/src/types/device/Light.js';
-import { Outlet as _Outlet, OutletAttributes } from 'dirigera/dist/src/types/device/Outlet.js';
 import { PlatformAccessory } from 'homebridge';
 import { isBoolean } from '../common.js';
+import { SwitchAttributes } from '../dirigera.js';
 import { DirigeraHub } from '../DirigeraHub.js';
 import { DirigeraPlatform } from '../DirigeraPlatform.js';
 import { DirigeraDevice } from './DirigeraDevice.js';
-import { Switch } from './Switch.js';
+import { Light } from './Light.js';
 
-export class Outlet extends DirigeraDevice<OutletAttributes> {
+export class Switch extends DirigeraDevice<LightAttributes> {
 
-    static readonly create = async (platform: DirigeraPlatform, hub: DirigeraHub, accessory: PlatformAccessory, device: Device): Promise<Outlet> => {
-        const asSwitch = hub.config.devices?.[device.id]?.asSwitch ?? false;
-        if (asSwitch) {
-            return Switch.create(platform, hub, accessory, device);
-        }
-        return new Outlet(platform, hub, accessory, <_Outlet>device);
-    };
+    static readonly create = async (platform: DirigeraPlatform, hub: DirigeraHub, accessory: PlatformAccessory, device: Device): Promise<Light> => {
+        return new Switch(platform, hub, accessory, device);
+    }
 
-    private constructor(platform: DirigeraPlatform, hub: DirigeraHub, accessory: PlatformAccessory, device: _Outlet) {
-        super(platform, hub, accessory, device, accessory.getService(platform.Service.Outlet) ?? accessory.addService(platform.Service.Outlet));
+    private constructor(platform: DirigeraPlatform, hub: DirigeraHub, accessory: PlatformAccessory, device: Device) {
+        super(platform, hub, accessory, device, accessory.getService(platform.Service.Switch) ?? accessory.addService(platform.Service.Switch));
 
         this.service.getCharacteristic(platform.Characteristic.On)
             .setValue(this.device.attributes.isOn as boolean)
@@ -33,16 +29,16 @@ export class Outlet extends DirigeraDevice<OutletAttributes> {
 
     }
 
-    update(attributes: OutletAttributes) {
+    update(attributes: SwitchAttributes) {
         this.device.attributes = attributes;
         if (isBoolean(attributes.isOn)) {
-            this.accessory.getService(this.platform.Service.Lightbulb)!
+            this.accessory.getService(this.platform.Service.Switch)!
                 .getCharacteristic(this.platform.Characteristic.On)
                 .updateValue(attributes.isOn, { fromDirigera: true });
         }
     }
 
-    async close() {
+    async close(){
     }
 
 }

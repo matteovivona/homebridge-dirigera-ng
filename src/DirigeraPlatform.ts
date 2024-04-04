@@ -191,7 +191,7 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
             accessory.context.hubName = hub.id;
             accessory.context.deviceId = device.id;
             accessory.context.deviceName = deviceName;
-            this.log.info(`[${hub.name}] registering [${device.deviceType}] device [${accessory.displayName}]`);
+            this.log.info(`[${hub.name}] registering [${device.deviceType}][${device.id}] device [${accessory.displayName}]`);
             this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ]);
             this.accessories.push(accessory);
         } else {

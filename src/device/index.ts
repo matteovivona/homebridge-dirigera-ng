@@ -1,4 +1,5 @@
 import { XDevice } from '../dirigera.js';
+import { AirQualitySensor } from './AirQualitySensor.js';
 import { Blinds } from './Blinds.js';
 import { ContactSensor } from './ContactSensor.js';
 import { DirigeraDevice } from './DirigeraDevice.js';
@@ -13,5 +14,6 @@ export const Devices: { [type in XDevice['deviceType']]?: DirigeraDevice.Factory
     openCloseSensor: ContactSensor,
     motionSensor: MotionSensor,
     outlet: Outlet,
-    waterSensor: LeakSensor
+    waterSensor: LeakSensor,
+    environmentSensor: AirQualitySensor
 }

@@ -19,13 +19,16 @@ export class DirigeraHub {
         if (isNil(gatewayIP)) {
             throw new Error('Invalid hub configuration. Missing [host] setting');
         }
+        logger.debug(`authenticating host [${config.host}], name [${config.name}]`);
         const accessToken = config.token ?? await DirigeraHub.authenticate(config.host, config.name, logger);
+        logger.debug(`access token [${accessToken}]`);
         const client = await createDirigeraClient({
             gatewayIP: config.host,
             accessToken
         });
         config.token = accessToken;
         const info = await client.hub.status();
+        logger.debug(`hub info [${JSON.stringify(info)}]`);
         const hub = new DirigeraHub(config, info, client, logger);
         await hub.start();
         return hub;
@@ -120,7 +123,7 @@ export class DirigeraHub {
         this.client.startListeningForUpdates(update => {
             this.availability.setAvailable(true);
             this.resetHeartbeat();
-            this.logger.debug(`event [${JSON.stringify(update)}]`);
+            // this.logger.debug(`event [${JSON.stringify(update)}]`);
             switch (update.type) {
                 case 'deviceStateChanged':
                     if (update.data.attributes) {
@@ -136,10 +139,10 @@ export class DirigeraHub {
                     }
                     break;
                 case 'deviceRemoved':
-                    if (update.data.id) {
+                    if (update.removedDeviceId) {
                         this.emitter.emit('deviceRemoved', {
-                            deviceId: update.data.id,
-                            type: update.data.deviceType
+                            deviceId: update.removedDeviceId.id,
+                            type: update.removedDeviceId.type
                         });
                     }
                     break;

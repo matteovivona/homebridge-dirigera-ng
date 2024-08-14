@@ -9,6 +9,16 @@ export const isNumber = (value: any): value is number => !isNil(value) && typeof
 
 export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+export const runAsync = <R = any>(fn: Function, options?: { done?: (result: any) => void, error?: (e: Error) => void}) => {
+    (async () => {
+        fn();
+    })().then(result => {
+        options?.done?.(result);
+    }).catch(error => {
+        options?.error?.(error);
+    });
+}
+
 export const cleanMapAsync = async <K extends string = string, V = any>(map: { [key in K]: V }, cb: (key: K, val: V) => void | Promise<void>) => {
     for (let key of Object.keys(map)) {
         const val = map[key];

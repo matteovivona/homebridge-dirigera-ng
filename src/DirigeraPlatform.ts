@@ -120,9 +120,9 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
             });
 
             hub.on('deviceStateChanged', change => {
-                this.log.debug(`hub [${hub.name}] state changed [${JSON.stringify(change)}]`);
                 const device = this.devices[hubId].find(device => device.id === change.id);
                 if (device) {
+                    this.log.debug(`hub [${hub.name}] device [${device.device.attributes.customName}] state changed [${JSON.stringify(change)}]`);
                     device.update(change.attributes);
                 }
             });
@@ -183,9 +183,7 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
 
         if (!accessory) {
             const deviceName = device.attributes.customName || device.deviceType;
-            const displayName = device.room?.name ?
-                `${device.room?.name} ${deviceName}` :
-                device.attributes.customName;
+            const displayName = device.room?.name ? `${device.room?.name} ${deviceName}` : deviceName;
             accessory = new this.api.platformAccessory(displayName, uuid);
             accessory.context.hubId = hub.id;
             accessory.context.hubName = hub.id;
@@ -208,7 +206,9 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
             .setCharacteristic(this.Characteristic.Manufacturer, device.attributes.manufacturer)
             .setCharacteristic(this.Characteristic.Model, device.attributes.model)
             .setCharacteristic(this.Characteristic.FirmwareRevision, device.attributes.firmwareVersion)
-            .setCharacteristic(this.Characteristic.SerialNumber, device.attributes.serialNumber);
+            .setCharacteristic(this.Characteristic.SerialNumber, device.attributes.serialNumber)
+            .setCharacteristic(this.Characteristic.AppMatchingIdentifier, device.id);
+
 
         this.devices[hub.id].push(await Devices[device.deviceType]!.create(this, hub, accessory, device));
     }

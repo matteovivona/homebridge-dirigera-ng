@@ -18,34 +18,26 @@ export class LeakSensor extends DirigeraDevice<WaterSensorAttributes> {
 
         this.service.getCharacteristic(platform.Characteristic.LeakDetected)
             .setValue(!!this.device.attributes.waterLeakDetected)
-            .onSet(async (value, context) => {
-                const waterLeakDetected = value as boolean;
-                this.device.attributes.waterLeakDetected = waterLeakDetected;
-                if (!context?.fromDirigera) {
-                    await hub.setDeviceAttributes(device.id, { waterLeakDetected } as Partial<WaterSensorAttributes>);
-                }
-            });
-
-
 
         if (isNumber(device.attributes.batteryPercentage)) {
             this.battery = accessory.getService(platform.Service.Battery) ?? accessory.addService(platform.Service.Battery);
             this.battery.getCharacteristic(platform.Characteristic.BatteryLevel)
                 .setValue(device.attributes.batteryPercentage)
-                .onGet(() => this.device.attributes.batteryPercentage as number);
         }
     }
 
     update(attributes: WaterSensorAttributes) {
-        this.device.attributes = attributes;
+        this.device.attributes = {
+            ...this.device.attributes,
+            ...attributes
+        }
         if (isBoolean(attributes.waterLeakDetected)) {
-            this.accessory.getService(this.platform.Service.LeakSensor)!
-                .getCharacteristic(this.platform.Characteristic.LeakDetected)
-                .updateValue(attributes.waterLeakDetected, { fromDirigera: true });
+            this.service.getCharacteristic(this.platform.Characteristic.LeakDetected)
+                .setValue(attributes.waterLeakDetected);
         }
         if (isNumber(attributes.batteryPercentage) && this.battery) {
-            this.device.attributes.batteryPercentage = attributes.batteryPercentage;
-            this.battery.updateCharacteristic(this.platform.Characteristic.BatteryLevel, this.device.attributes.batteryPercentage);
+            this.battery.getCharacteristic(this.platform.Characteristic.BatteryLevel)
+                .setValue(attributes.batteryPercentage);
         }
     }
 

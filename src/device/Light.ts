@@ -1,4 +1,3 @@
-import { SwitchAttributes, XDevice } from '../dirigera.js';
 import { DirigeraHub } from '../DirigeraHub.js';
 import { PlatformAccessory } from 'homebridge';
 import { Device } from 'dirigera';
@@ -24,7 +23,7 @@ export class Light extends DirigeraDevice<LightAttributes> {
         this.service.getCharacteristic(platform.Characteristic.On)
             .setValue(this.device.attributes.isOn as boolean)
             .onSet(async (value, context) => {
-                const isOn = value as boolean;
+                const isOn = !!value;
                 this.device.attributes.isOn = isOn;
                 if (!context?.fromDirigera) {
                     await hub.setDeviceAttributes(device.id, { isOn } as LightAttributes);
@@ -37,8 +36,9 @@ export class Light extends DirigeraDevice<LightAttributes> {
                 .onSet(async (value, context) => {
                     const lightLevel = value as number;
                     this.device.attributes.lightLevel = lightLevel
+                    const { colorTemperature, colorSaturation } = this.device.attributes;
                     if (!context?.fromDirigera) {
-                        await hub.setDeviceAttributes(device.id, { lightLevel } as LightAttributes);
+                        await hub.setDeviceAttributes(device.id, { lightLevel, colorSaturation, colorTemperature } as LightAttributes);
                     }
                 });
         }
@@ -49,10 +49,11 @@ export class Light extends DirigeraDevice<LightAttributes> {
                 .onSet(async (value, context) => {
                     const colorHue = value as number;
                     this.device.attributes.colorHue = colorHue;
+                    const { colorSaturation } = this.device.attributes;
                     if (!context?.fromDirigera) {
-                        await hub.setDeviceAttributes(device.id, { colorHue } as LightAttributes);
+                        await hub.setDeviceAttributes(device.id, { colorHue, colorSaturation } as LightAttributes);
                     }
-                })
+                });
         }
 
         if (isNumber(device.attributes.colorSaturation)) {
@@ -61,24 +62,45 @@ export class Light extends DirigeraDevice<LightAttributes> {
                 .onSet(async (value, context) => {
                     const colorSaturation = <number>value / 100;
                     this.device.attributes.colorSaturation = colorSaturation;
+                    const { colorHue } = this.device.attributes;
                     if (!context?.fromDirigera) {
-                        await hub.setDeviceAttributes(device.id, { colorSaturation } as LightAttributes);
+                        await hub.setDeviceAttributes(device.id, { colorHue, colorSaturation } as LightAttributes);
                     }
-                })
-                .onGet(() => <number>device.attributes.colorSaturation * 100);
+                });
         }
 
         if (isNumber(device.attributes.colorTemperature)) {
-            const colorTemperatureMin = device.attributes.colorTemperatureMin || 50;
-            const colorTemperatureMax = device.attributes.colorTemperatureMax || 450;
-            const spectrum = colorTemperatureMax - colorTemperatureMin;
-            const ratio = spectrum / 350;
+
+            let colorTemperature = device.attributes.colorTemperature;
+
+            let min;
+            let max;
+
+            if (isNumber(device.attributes.colorTemperatureMin) && isNumber(device.attributes.colorTemperatureMax)) {
+                min = Math.max(device.attributes.colorTemperatureMin, device.attributes.colorTemperatureMax);
+                max = Math.min(device.attributes.colorTemperatureMin, device.attributes.colorTemperatureMax);
+                colorTemperature = Math.max(min, colorTemperature);
+                colorTemperature = Math.min(max, colorTemperature);
+            }
+
+            const value = 1_000_000 / colorTemperature;
+
             this.service.getCharacteristic(platform.Characteristic.ColorTemperature)
-                .setValue(50 + (device.attributes.colorTemperature - colorTemperatureMin) / ratio)
+                .setValue(value)
+                .setProps({
+                    minValue: isNumber(min) ?  1_000_000 / min : undefined,
+                    maxValue: isNumber(max) ? 1_000_000 / max : undefined
+                })
                 .onSet(async (value, context) => {
-                    const colorTemperature = colorTemperatureMin + (<number>value - 50) * ratio;
+                    let colorTemperature = Math.round(1_000_000 / <number>value);
+                    if (isNumber(device.attributes.colorTemperatureMin)) {
+                        colorTemperature = Math.min(device.attributes.colorTemperatureMin, colorTemperature);
+                    }
+                    if (isNumber(device.attributes.colorTemperatureMax)) {
+                        colorTemperature = Math.max(device.attributes.colorTemperatureMax, colorTemperature);
+                    }
                     device.attributes.colorTemperature = colorTemperature;
-                    if (!context.fromDirigera) {
+                    if (!context?.fromDirigera) {
                         await hub.setDeviceAttributes(device.id, { colorTemperature } as LightAttributes)
                     }
                 });
@@ -87,7 +109,10 @@ export class Light extends DirigeraDevice<LightAttributes> {
     }
 
     update(attributes: LightAttributes) {
-        this.device.attributes = attributes;
+        this.device.attributes = {
+            ...this.device.attributes,
+            ...attributes
+        };
         if (isBoolean(attributes.isOn)) {
             this.accessory.getService(this.platform.Service.Lightbulb)!
                 .getCharacteristic(this.platform.Characteristic.On)
@@ -106,13 +131,8 @@ export class Light extends DirigeraDevice<LightAttributes> {
                 .updateValue(attributes.colorSaturation * 100, { fromDirigera: true });
         }
         if (isNumber(attributes.colorTemperature)) {
-            const colorTemperatureMin = attributes.colorTemperatureMin || this.device.attributes.colorTemperatureMin || 50;
-            const colorTemperatureMax = attributes.colorTemperatureMax || this.device.attributes.colorTemperatureMax || 450;
-            const spectrum = colorTemperatureMax - colorTemperatureMin;
-            const ratio = spectrum / 350;
-            const value = 50 + (attributes.colorTemperature - colorTemperatureMin) / ratio;
             this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
-                .updateValue(value, { fromDirigera: true });
+                .setValue(1_000_000 / attributes.colorTemperature, { fromDirigera: true });
         }
     }
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.20](https://github.com/uboness/homebridge-dirigera/compare/v0.1.19...v0.1.20) (2024-08-14)
+
+
+### Bug Fixes
+
+* cleaned up all the sensors ([7ee6098](https://github.com/uboness/homebridge-dirigera/commit/7ee6098740825193e53cff145b831002010623e2))
+
 ## [0.1.19](https://github.com/uboness/homebridge-dirigera/compare/v0.1.18...v0.1.19) (2024-04-04)
 
 

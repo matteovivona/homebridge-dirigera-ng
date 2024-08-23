@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.2](https://github.com/uboness/homebridge-dirigera/compare/v0.2.1...v0.2.2) (2024-08-23)
+
+
+### Bug Fixes
+
+* unregister accessories with the now deprecated UUID which is based on the device type and serial number. ([9ded118](https://github.com/uboness/homebridge-dirigera/commit/9ded11869935e5665366415e814f2e5ec5f94643))
+
 ## [0.2.1](https://github.com/uboness/homebridge-dirigera/compare/v0.2.0...v0.2.1) (2024-08-23)
 
 

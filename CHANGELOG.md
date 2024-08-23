@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.1](https://github.com/uboness/homebridge-dirigera/compare/v0.2.0...v0.2.1) (2024-08-23)
+
+
+### Bug Fixes
+
+* fixed the plugin name to include the plugin package scope (avoids having homebridge to auto-fix this mismatch) ([b378b53](https://github.com/uboness/homebridge-dirigera/commit/b378b53b84ea99e63d51e1b1e441c0bb23913e6a))
+* unregister accessories with the now deprecated UUID which is based on the device type and serial number. ([5c2836e](https://github.com/uboness/homebridge-dirigera/commit/5c2836e75aefb3a57e2019f75d6d37c489d4c66e))
+
 ## [0.2.0](https://github.com/uboness/homebridge-dirigera/compare/v0.1.20...v0.2.0) (2024-08-23)
 
 

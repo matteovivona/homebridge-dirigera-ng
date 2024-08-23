@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.0](https://github.com/uboness/homebridge-dirigera/compare/v0.1.20...v0.2.0) (2024-08-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* Before it was generated based on a tuple { hubId, deviceType, serialNumber} which worked fine for all IKEA devices which (today) are single devices. But when connecting 3rd party devices it can fail - for example, when you have a in-wall dual relay, each relay is considered a separate dirigera device which sharing a single physical device (hence also the same serial number). In such scenario, the only thing that differentiates these two devices is their associated dirigera id. This change will cause the existing registered accessories to deregister and register again under the new UUID (which will effectively cause the devices to be removed and re-added to homekit under the default room).
+
+### Bug Fixes
+
+* now UUID based on the dirigera `device.id`. ([881b738](https://github.com/uboness/homebridge-dirigera/commit/881b738a8f40ff1d68bb0dc65599b773867d6b3b))
+
 ## [0.1.20](https://github.com/uboness/homebridge-dirigera/compare/v0.1.19...v0.1.20) (2024-08-14)
 
 

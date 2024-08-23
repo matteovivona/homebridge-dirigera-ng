@@ -7,7 +7,7 @@ import {
     PlatformConfig,
     Service
 } from 'homebridge';
-import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
+import { PLATFORM_NAME, PLUGIN_NAME, PLUGIN_VERSION } from './settings';
 import { DirigeraHub } from './DirigeraHub.js';
 import { Devices } from './device/index.js';
 import { asyncForEach, cleanArrayAsync, cleanMapAsync, isString, isUndefined, spliceFirstMatch } from './common.js';
@@ -92,21 +92,36 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
         }
 
         // first, let's clean up the cached accessories that are no long available
-        const indices = [] as number[];
+        const indices: number[] = [];
         for (let i = 0; i < this.accessories.length; i++) {
             const accessory = this.accessories[i];
             const hub = this.hubs[accessory.context.hubId];
-            const device = await hub.getDevice(accessory.context.deviceId);
-            if (!hub || !device) {
-                this.log.info(`Unregistering accessory [${accessory.context.hubName}][${accessory.displayName}] (no longer available)`);
+            if (!hub) {
+                this.log.info(`Unregistering accessory from hub [${accessory.context.hubName}] and device [${accessory.displayName}] (Dirigera hub no longer available)`);
                 this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ])
                 indices.push(i);
-            } else if (accessory.UUID === `${hub.id}:${device.deviceType}:${device.attributes.serialNumber}`) {
-                // the UUID of the accessory is deprecated as it's now based on the device id instead of the type & serial number
-                // we'll need to unregister the accessory so it'll then be added again under the correct UUID.
-                this.log.info(`Unregistering accessory [${accessory.context.hubName}][${accessory.displayName}] (deprecated UUID)`);
-                this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ])
-                indices.push(i);
+            } else {
+                const device = hub && await hub.getDevice(accessory.context.deviceId);
+                if (!device) {
+                    this.log.info(`Unregistering accessory from hub [${accessory.context.hubName}] and device [${accessory.displayName}] (Device no longer available)`);
+                    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ])
+                    indices.push(i);
+                } else if (!accessory.context.pluginVersion) {
+                    // from 0.2.0 the accessory UUID has changed to be based on the device id.
+                    // from 0.2.2 the plugin version is stored in the accessory context.
+                    //
+                    // the UUID of the accessory is deprecated as it's now based on the device id instead of the type & serial number
+                    // we'll need to unregister the accessory so it'll then be added again under the correct UUID.
+                    this.log.info(`Unregistering accessory from hub [${accessory.context.hubName}] and device [${accessory.displayName}] (deprecated accessory UUID)`);
+                    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ])
+                    indices.push(i);
+                } else {
+                    //
+                    // Here we have a chance to check the plugin version associated with the accessory and compare it with
+                    // and compare it to the current version of the plugin, and based on that decide whether we need to
+                    // unregister the accessory (so it'll be re-registered again)
+                    //
+                }
             }
         }
         indices.forEach(i => this.accessories.splice(i, 1));
@@ -193,9 +208,10 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
             const displayName = device.room?.name ? `${device.room?.name} ${deviceName}` : deviceName;
             accessory = new this.api.platformAccessory(displayName, uuid);
             accessory.context.hubId = hub.id;
-            accessory.context.hubName = hub.id;
+            accessory.context.hubName = hub.name;
             accessory.context.deviceId = device.id;
             accessory.context.deviceName = deviceName;
+            accessory.context.pluginVersion = PLUGIN_VERSION;
             this.log.info(`[${hub.name}] registering [${device.deviceType}][${device.id}] device [${accessory.displayName}]`);
             this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ]);
             this.accessories.push(accessory);

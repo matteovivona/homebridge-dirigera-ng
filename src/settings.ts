@@ -1,3 +1,9 @@
+const pkg = require('../package.json');
+console.log(pkg);
+
+export const PLUGIN_VERSION = pkg.version as string;
+
+
 /**
  * This is the name of the platform that users will use to register the plugin in the Homebridge config.json
  */
@@ -6,4 +12,4 @@ export const PLATFORM_NAME = 'Dirigera';
 /**
  * This must match the name of your plugin as defined the package.json
  */
-export const PLUGIN_NAME = '@uboness/homebridge-dirigera';
+export const PLUGIN_NAME = pkg.name as string;

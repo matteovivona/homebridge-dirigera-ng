@@ -92,29 +92,26 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
         }
 
         // first, let's clean up the cached accessories that are no long available
-        const indices: number[] = [];
+        const removeAccessories: Array<{ accessory: PlatformAccessory, reason: string }> = [];
         for (let i = 0; i < this.accessories.length; i++) {
             const accessory = this.accessories[i];
             const hub = this.hubs[accessory.context.hubId];
             if (!hub) {
-                this.log.info(`Unregistering accessory from hub [${accessory.context.hubName}] and device [${accessory.displayName}] (Dirigera hub no longer available)`);
-                this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ])
-                indices.push(i);
+                this.accessories.splice(i--, 1);
+                removeAccessories.push({ accessory, reason: 'Dirigera hub no longer available' });
             } else {
                 const device = hub && await hub.getDevice(accessory.context.deviceId);
                 if (!device) {
-                    this.log.info(`Unregistering accessory from hub [${accessory.context.hubName}] and device [${accessory.displayName}] (Device no longer available)`);
-                    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ])
-                    indices.push(i);
+                    this.accessories.splice(i--, 1);
+                    removeAccessories.push({ accessory, reason: 'Device no longer available' });
                 } else if (!accessory.context.pluginVersion) {
                     // from 0.2.0 the accessory UUID has changed to be based on the device id.
                     // from 0.2.2 the plugin version is stored in the accessory context.
                     //
                     // the UUID of the accessory is deprecated as it's now based on the device id instead of the type & serial number
-                    // we'll need to unregister the accessory so it'll then be added again under the correct UUID.
-                    this.log.info(`Unregistering accessory from hub [${accessory.context.hubName}] and device [${accessory.displayName}] (deprecated accessory UUID)`);
-                    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [ accessory ])
-                    indices.push(i);
+                    // we'll need to unregister the accessory such that it'll then be added again under the correct UUID.
+                    this.accessories.splice(i--, 1);
+                    removeAccessories.push({ accessory, reason: 'Deprecated accessory UUID' });
                 } else {
                     //
                     // Here we have a chance to check the plugin version associated with the accessory and compare it with
@@ -124,12 +121,17 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
                 }
             }
         }
-        indices.forEach(i => this.accessories.splice(i, 1));
+
+        for (const { accessory, reason } of removeAccessories) {
+            this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME,[ accessory ]);
+            this.log.info(`Unregistering cached accessory [${accessory.displayName}] from hub [${accessory.context.hubName}] - ${reason}`);
+        }
 
         for (const hubId in this.hubs) {
             const hub = this.hubs[hubId];
 
             const devices = await hub.listDevices();
+            // console.log(`devices [${JSON.stringify(devices)}]`);
             for (const device of devices) {
                 await this.registerDevice(hub, device);
             }

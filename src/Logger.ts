@@ -1,5 +1,4 @@
 import { Logging } from 'homebridge';
-import { getLogPrefix } from 'homebridge/lib/logger.js';
 
 export type ILogger = Pick<Logging, 'debug' | 'info' | 'warn' | 'error'> & {
     getLogger(category: string, ...categories: string[]): ILogger
@@ -12,7 +11,7 @@ export class ContextLogger implements ILogger {
 
     constructor(logger: Omit<ILogger, 'getLogger'>, category: string, ...categories: string[]) {
         this.logger = logger;
-        this.context = `${getLogPrefix(category)}${categories.reduce((line, cat) => { line += '' + getLogPrefix(cat); return line; }, '')}`;
+        this.context = `[${category}]${categories.reduce((line, cat) => { line += `[${cat}]`; return line; }, '')}`;
     }
 
     debug(message: string, ...parameters: any[]): void {

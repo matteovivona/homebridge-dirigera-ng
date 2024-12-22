@@ -50,8 +50,8 @@
     "release": "npm run release:bump && npm run release:push && npm run release:publish"
   },
   "dependencies": {
-    "dirigera": "^0.16.1",
-    "got": "^14.1.0"
+    "dirigera": "^1.1.0",
+    "got": "^14.4.2"
   },
   "devDependencies": {
     "@types/node": "^18.18.0",
@@ -60,7 +60,7 @@
     "commit-and-tag-version": "^12.0.0",
     "eslint": "^8.45.0",
     "homebridge": "^1.8.4",
-    "homebridge-config-ui-x": "^4.55.1",
+    "homebridge-config-ui-x": "^4.52.3",
     "nodemon": "^2.0.22",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",

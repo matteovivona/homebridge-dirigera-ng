@@ -121,10 +121,14 @@ export class DirigeraHub {
 
     async start() {
         this.client.startListeningForUpdates(update => {
+            console.log(`dirigera:update ${JSON.stringify(update)}`);
             this.availability.setAvailable(true);
             this.resetHeartbeat();
             // this.logger.debug(`event [${JSON.stringify(update)}]`);
             switch (update.type) {
+                case 'pong':
+                    this.emitter.emit('pong');
+                    break;
                 case 'deviceStateChanged':
                     if (update.data.attributes) {
                         this.emitter.emit('deviceStateChanged', {
@@ -152,10 +156,11 @@ export class DirigeraHub {
     }
 
     on(event: 'availability', handler: (event: { available: boolean, error?: string }) => void): void;
+    on(event: 'pong', handler: () => void): void;
     on(event: 'deviceStateChanged', handler: (event: DirigeraHub.DeviceStateChange) => void): void;
     on(event: 'deviceAdded', handler: (event: Device) => void)
     on(event: 'deviceRemoved', handler: (event: { deviceId: string, type: Device['deviceType'] }) => void);
-    on(event: 'availability' | 'deviceStateChanged' | 'deviceAdded' | 'deviceRemoved', handler: (event: any) => void) {
+    on(event: 'availability' | 'pong' | 'deviceStateChanged' | 'deviceAdded' | 'deviceRemoved', handler: (event: any) => void) {
         this.emitter.on(event, handler);
     }
 
@@ -174,8 +179,9 @@ export class DirigeraHub {
         return this.availability.available;
     }
 
-    async listDevices(): Promise<Device[]> {
-        return this.client.devices.list();
+    async listDevices(type?: Device['type']): Promise<Device[]> {
+        const devices = await this.client.devices.list();
+        return type ? devices.filter(device => device.type === type) : devices;
     }
 
     async identifyDevice(id: string, period: number = 5): Promise<void> {

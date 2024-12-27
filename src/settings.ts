@@ -1,5 +1,4 @@
 const pkg = require('../package.json');
-console.log(pkg);
 
 export const PLUGIN_VERSION = pkg.version as string;
 

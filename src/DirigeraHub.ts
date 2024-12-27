@@ -121,10 +121,8 @@ export class DirigeraHub {
 
     async start() {
         this.client.startListeningForUpdates(update => {
-            console.log(`dirigera:update ${JSON.stringify(update)}`);
             this.availability.setAvailable(true);
             this.resetHeartbeat();
-            // this.logger.debug(`event [${JSON.stringify(update)}]`);
             switch (update.type) {
                 case 'pong':
                     this.emitter.emit('pong');

@@ -28,7 +28,7 @@ export interface WaterSensorAttributes extends CommonDeviceAttributes, Identifia
 
 export interface SwitchAttributes extends CommonDeviceAttributes, IdentifiableDeviceAttributes, JoinableDeviceAttributes, OtaUpdatableDeviceAttributes {
     isOn: boolean
-    startupOnOff: 'startOn' | 'startPrevious'
+    startupOnOff: 'startOn' | 'startPrevious' | 'startToggle'
     identifyStarted: string
     identifyPeriod: number
 }

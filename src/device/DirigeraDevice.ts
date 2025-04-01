@@ -27,6 +27,7 @@ export abstract class DirigeraDevice<Attrs extends CommonDeviceAttributes = Comm
         this._available = true;
         this.service.setPrimaryService(true);
         this.service.setCharacteristic(platform.Characteristic.Name, accessory.displayName);
+        this.service.addOptionalCharacteristic(platform.Characteristic.StatusActive);
         let status = this.service.getCharacteristic(platform.Characteristic.StatusActive);
         if (!status) {
             status = this.service.addCharacteristic(platform.Characteristic.StatusActive);

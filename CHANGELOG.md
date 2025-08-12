@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.0](https://github.com/uboness/homebridge-dirigera/compare/v0.2.6...v0.3.0) (2025-08-12)
+
+
+### Features
+
+* moved to pnpm ([85fb912](https://github.com/uboness/homebridge-dirigera/commit/85fb9121c06af372550e46e39ef7030d08d8a637))
+
 ## [0.2.6](https://github.com/uboness/homebridge-dirigera/compare/v0.2.5...v0.2.6) (2025-04-01)
 
 ## [0.2.5](https://github.com/uboness/homebridge-dirigera/compare/v0.2.4...v0.2.5) (2025-04-01)

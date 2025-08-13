@@ -8,6 +8,8 @@
 
 ### !! Experimental !!
 
+[![Build](https://github.com/uboness/homebridge-dirigera/actions/workflows/build.yml/badge.svg?branch=latest)](https://github.com/uboness/homebridge-dirigera/actions/workflows/build.yml)
+
 </span>
 
 Currently supports the following device types:

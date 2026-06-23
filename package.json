@@ -1,27 +1,35 @@
 {
-  "name": "@uboness/homebridge-dirigera",
+  "name": "homebridge-dirigera-ng",
   "version": "0.3.0",
-  "author": "uboness",
+  "author": "matteovivona <matteo@trustlayer.io>",
   "type": "commonjs",
   "publishConfig": {
-    "@uboness:registry": "https://registry.npmjs.org "
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
-  "displayName": "Homebridge DIRIGERA",
-  "description": "IKEA DIRIGERA Homebridge Plugin",
+  "displayName": "Homebridge DIRIGERA NG",
+  "description": "IKEA DIRIGERA Homebridge Plugin (maintained fork)",
   "license": "Apache-2.0",
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "homebridge",
+    "homekit",
+    "dirigera",
+    "ikea",
+    "tradfri",
+    "smart-home"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/uboness/homebridge-dirigera"
+    "url": "git+https://github.com/matteovivona/homebridge-dirigera-ng.git"
   },
   "bugs": {
-    "url": "https://github.com/uboness/homebridge-dirigera/issues"
+    "url": "https://github.com/matteovivona/homebridge-dirigera-ng/issues"
   },
+  "homepage": "https://github.com/matteovivona/homebridge-dirigera-ng#readme",
   "engines": {
-    "node": "^20.9.0 || ^22.18.0",
-    "homebridge": "^1.6.0"
+    "node": "^20.9.0 || ^22.18.0 || ^24.0.0",
+    "homebridge": "^1.6.0 || ^2.0.0-beta.0"
   },
   "exports": {
     ".": {
@@ -40,9 +48,10 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
+    "lint": "eslint src --max-warnings 0",
     "build": "pnpm run clean && tsc",
     "watch": "pnpm run clean && tsc -w",
-    "prepublishOnly": "pnpm run build",
+    "prepublishOnly": "pnpm run lint && pnpm run build",
     "release:bump": "pnpm run build && commit-and-tag-version",
     "release:bump-minor": "commit-and-tag-version --release-as minor",
     "release:bump-major": "commit-and-tag-version --release-as major",

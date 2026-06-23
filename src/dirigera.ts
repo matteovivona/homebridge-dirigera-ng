@@ -3,10 +3,10 @@ import {
     CommonDeviceAttributes,
     IdentifiableDeviceAttributes,
     JoinableDeviceAttributes, type OtaUpdatableDeviceAttributes
-} from 'dirigera/src/types/device/Device.js';
-import { MotionSensorAttributes as LegacyMotionSensorAttributes } from 'dirigera/src/types/device/MotionSensor.js';
+} from 'dirigera/dist/src/types/device/Device.js';
+import { MotionSensorAttributes as LegacyMotionSensorAttributes } from 'dirigera/dist/src/types/device/MotionSensor.js';
 
-import type { Room } from 'dirigera/src/types/Room.js';
+import type { Room } from 'dirigera/dist/src/types/Room.js';
 
 export type XDevice = Omit<Device, 'deviceType' | 'attributes'> & {
     deviceType: Device['deviceType'] | 'waterSensor',

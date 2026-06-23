@@ -2,6 +2,8 @@
   "pluginAlias": "Dirigera",
   "pluginType": "platform",
   "singular": true,
+  "headerDisplay": "Homebridge plugin for the IKEA DIRIGERA hub. Add one entry per hub on your local network. A token is highly recommended — without it, startup pauses until you press the hub's action button and the resolved token is printed in the logs.",
+  "footerDisplay": "For advanced device overrides (e.g. exposing a device `asSwitch`), see the [README](https://github.com/matteovivona/homebridge-dirigera-ng#readme).",
   "schema": {
     "type": "object",
     "properties": {
@@ -14,17 +16,20 @@
           "properties": {
             "host": {
               "title": "Host / IP",
+              "description": "The host or IP address of the DIRIGERA hub on your local network.",
               "type": "string",
               "required": true,
               "format": "hostname"
             },
             "token": {
               "title": "Authentication Token",
+              "description": "The hub authentication token. Highly recommended: without it, startup halts until you press the hub's action button, then the token is printed in the logs — copy it here to avoid re-pairing on every restart.",
               "type": "string",
               "required": false
             },
             "name": {
               "title": "Name",
+              "description": "Optional display name for the hub (used in logs). Defaults to the name reported by the hub.",
               "type": "string",
               "required": false,
               "minLength": 1

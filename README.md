@@ -1,87 +1,113 @@
 <p align="center">
-
+  <img src="https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-wordmark-logo-vertical.png" width="150">
 </p>
 
 <span align="center">
 
-# Homebridge Plugin for IKEA DIRIGERA Hub
+# Homebridge DIRIGERA NG
 
-### !! Experimental !!
+Homebridge plugin for the **IKEA DIRIGERA** hub.
 
-[![Build](https://github.com/uboness/homebridge-dirigera/actions/workflows/build.yml/badge.svg?branch=latest)](https://github.com/uboness/homebridge-dirigera/actions/workflows/build.yml)
+[![Build](https://github.com/matteovivona/homebridge-dirigera-ng/actions/workflows/build.yml/badge.svg?branch=latest)](https://github.com/matteovivona/homebridge-dirigera-ng/actions/workflows/build.yml)
+[![npm](https://img.shields.io/npm/v/homebridge-dirigera-ng.svg)](https://www.npmjs.com/package/homebridge-dirigera-ng)
+[![npm downloads](https://img.shields.io/npm/dt/homebridge-dirigera-ng.svg)](https://www.npmjs.com/package/homebridge-dirigera-ng)
 
 </span>
 
-Currently supports the following device types:
+> **This project is a fork of [`uboness/homebridge-dirigera`](https://github.com/uboness/homebridge-dirigera)**
+> (published on npm as `@uboness/homebridge-dirigera`) by [uboness](https://github.com/uboness), which is no
+> longer maintained. This `-ng` ("next generation") fork continues maintenance with bug fixes and modernization.
+> All credit for the original work goes to the upstream author — see [Credits](#credits).
 
-- `light`
+## Supported device types
+
+- `light` (on/off, brightness, hue, saturation, color temperature)
 - `blinds`
-- `leak sensor`
-- `motion sensor`
 - `outlet`
-- `contact sensor`
+- `motion sensor`
+- `contact sensor` (open/close)
+- `leak sensor` (water)
+- `air quality sensor` (environment)
 
-### Settings
+## Installation
 
-Multiple hubs can be configured, where each hub entry has the following settings:
+Install through the Homebridge UI (search for **Homebridge DIRIGERA NG**), or via the CLI:
 
-- `host` (required) - specifies the host/IP of the DIRIGERA hub on your local network
-- `token` (optional, yet highly recommended) - specifies the authentication token to the hub. If not 
-   specified, the startup will be halted until you press on the pairing button of the hub. Then the 
-   authentication token will be resolved and printed in the logs - it is reommended to copy this token and store it in 
-   the settings, to avoid the creation of multiple tokens. Also, this way Homebridge won't halt during restart. 
-- `name` (optional) - will be set as the name of the hub (in the logs). When not set, the name is resolved from
-  the hub itself.
+```bash
+npm install -g homebridge-dirigera-ng
+```
 
-A typical record in the Homebridge `config` should look like this:
+## Configuration
+
+Multiple hubs can be configured. Each hub entry supports the following settings:
+
+| Setting  | Required | Description |
+|----------|----------|-------------|
+| `host`   | yes      | Host / IP of the DIRIGERA hub on your local network. |
+| `token`  | no\*     | Authentication token to the hub. **Highly recommended** — see note below. |
+| `name`   | no       | Display name for the hub (used in logs). Defaults to the name reported by the hub. |
+
+\* If `token` is omitted, startup pauses for up to ~1 minute waiting for you to press
+the **action button** on the bottom of the hub. The resolved token is then printed in
+the logs — copy it into your config to avoid re-pairing on every restart (and to stop
+Homebridge from halting during restarts).
+
+A typical config entry:
 
 ```json
 {
+  "platform": "Dirigera",
   "hubs": [
     {
-      "host": "<ip>",
+      "host": "192.168.1.50",
       "token": "<auth_token>",
       "name": "Living Room"
     }
-  ],
-  "platform": "Dirigera"
+  ]
 }
 ```
 
-!!! DANGER - USE AT OWN RISK !!!!
+## Advanced: forcing a service type (`asSwitch`)
 
-Sometimes you may find the need to pair non-ikea accessories with Dirigera. In these scenarios, since these are 
-non-native accessories, Dirigera might recognize them as different accessory/service types. For example, a switch may be
-recognized as lights. If this happens, you can "force" the plugin to expose certain services as other services. For that, 
-you'd need to follow the following steps:
+> ⚠️ **Use at your own risk.**
 
-1. Configure dirigera as normal and let homebridge pick up the devices as always.
-2. Choose the device you'd like to change by looking its ID in the logs. You want to look for a line that looks like this:
-```
-[Dirigera] [Roof] registering [light][c3a531cf-bc23-4786-b465-72bf9415a588_2] device [My Switch]
-```
+When you pair non-IKEA accessories with DIRIGERA, the hub may classify them as a
+different type than you expect (e.g. a switch reported as a `light`). You can force the
+plugin to expose such a device as a plain switch.
 
-!!! Read carefully the following step - DO NOT PREMATURELY RESTART HB if you wish to avoid ssh'ing into your device to fix it !!! 
+1. Configure DIRIGERA normally and let Homebridge discover the devices.
+2. Find the device ID in the logs — look for a line like:
+   ```
+   [Dirigera] [Living Room] registering [light][c3a531cf-bc23-4786-b465-72bf9415a588_2] device [My Switch]
+   ```
+3. Add a `devices` map to the hub configuration, keyed by that device ID
+   (edit the raw JSON config — this option is not in the UI form):
+   ```json
+   {
+     "host": "192.168.1.50",
+     "token": "<auth_token>",
+     "name": "Living Room",
+     "devices": {
+       "c3a531cf-bc23-4786-b465-72bf9415a588_2": {
+         "asSwitch": true
+       }
+     }
+   }
+   ```
+   `asSwitch` is supported for `light` and `outlet` devices.
 
-3. now, add the following "devices" field to the hub configuration (DO NOT RESTART HOMEBRIDGE YET):
-```
-{
-    "host": "...",
-    "token": "...",
-    "name": "...",
-    "devices": {
-        "c3a531cf-bc23-4786-b465-72bf9415a588_2": {
-            "asSwitch": true
-        }
-    }
-}
-```
-4. Now that you have this configuration (AND YOU DID NOT RESTART YET), copy the whole hub configuration, save it somewhere and remove this hub definition form the configuration.
-5. Now you can restart - this will completely remove all accessories that were previously created for this hub.
-6. After restart, edit the `config.json` again and add back the hub definition you modified earlier.
-7. Restart homebridge. Your device should not be published as a switch
+> **Note on re-classification:** once Homebridge has cached a device as one service
+> type, it cannot change it in place — the accessory must be unregistered and
+> re-registered. The simplest way to apply a change to an already-cached device is to
+> temporarily remove the hub from the config, restart Homebridge (which removes the
+> cached accessories for that hub), then add the hub back with the `devices` override
+> and restart again.
 
-Why all this hassle? Once HB registered your device as one service type, it is cached, and it cannot change it anymore. The device
-first needs to be unregistered before it's registered again as a different service. Since I'm too lazy right now to code the appropriate
-logic to do this un-registration automatically. I offer you a brut force approach which works for me (until it doesn't).
+## Credits
 
+- Original plugin: [uboness/homebridge-dirigera](https://github.com/uboness/homebridge-dirigera)
+- DIRIGERA client library: [`dirigera`](https://github.com/lpgera/dirigera)
+
+## License
+
+[Apache-2.0](./LICENSE)

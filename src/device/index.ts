@@ -1,12 +1,12 @@
 import { XDevice } from '../dirigera.js';
-import { AirQualitySensor } from './AirQualitySensor.js';
-import { Blinds } from './Blinds.js';
-import { ContactSensor } from './ContactSensor.js';
-import { DirigeraDevice } from './DirigeraDevice.js';
-import { LeakSensor } from './LeakSensor.js';
-import { Light } from './Light.js';
-import { MotionSensor } from './MotionSensor.js';
-import { Outlet } from './Outlet.js';
+import { AirQualitySensor } from './air-quality-sensor.js';
+import { Blinds } from './blinds.js';
+import { ContactSensor } from './contact-sensor.js';
+import { DirigeraDevice } from './dirigera-device.js';
+import { LeakSensor } from './leak-sensor.js';
+import { Light } from './light.js';
+import { MotionSensor } from './motion-sensor.js';
+import { Outlet } from './outlet.js';
 
 export const Devices: { [type in XDevice['deviceType']]?: DirigeraDevice.Factory } = {
     light: Light,

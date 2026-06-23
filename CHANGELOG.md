@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## Unreleased
+
+This release marks the start of the maintained **`homebridge-dirigera-ng`** fork of the
+no-longer-maintained [`@uboness/homebridge-dirigera`](https://github.com/uboness/homebridge-dirigera).
+
+### Project
+
+* Renamed package to `homebridge-dirigera-ng` and updated repository, author, and metadata.
+* Renamed all source files to kebab-case.
+* Hardened TypeScript config (`ES2022`, `noImplicitAny`) and added an ESLint flat config + `lint` script.
+* Updated CI to a supported Node matrix and added an npm publish workflow.
+* Completed `config.schema.json` (token, name, help text) and rewrote the README.
+
+### Bug Fixes
+
+* `Availability.error()` returned the method instead of the stored error.
+* Hub authentication threw on network errors (no `response`) and used a stale retry counter.
+* Light color-temperature min/max bounds were swapped and clamped incorrectly.
+* `Controller.update()` referenced the wrong service.
+* PKCE code verifier now uses a cryptographically secure RNG instead of `Math.random()`.
+
 ## [0.3.0](https://github.com/uboness/homebridge-dirigera/compare/v0.2.6...v0.3.0) (2025-08-12)
 
 

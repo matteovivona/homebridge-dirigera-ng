@@ -1,7 +1,7 @@
 import { API } from 'homebridge';
 
 import { PLATFORM_NAME } from './settings';
-import { DirigeraPlatform } from './DirigeraPlatform.js';
+import { DirigeraPlatform } from './dirigera-platform.js';
 
 /**
  * This method registers the platform with Homebridge

@@ -1,9 +1,9 @@
 import { PlatformAccessory, Service } from 'homebridge';
 import { isBoolean, isNumber } from '../common.js';
 import { WaterSensor, WaterSensorAttributes, XDevice } from '../dirigera.js';
-import { DirigeraHub } from '../DirigeraHub.js';
-import { DirigeraPlatform } from '../DirigeraPlatform.js';
-import { DirigeraDevice } from './DirigeraDevice.js';
+import { DirigeraHub } from '../dirigera-hub.js';
+import { DirigeraPlatform } from '../dirigera-platform.js';
+import { DirigeraDevice } from './dirigera-device.js';
 
 export class LeakSensor extends DirigeraDevice<WaterSensorAttributes> {
 

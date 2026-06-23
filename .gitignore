@@ -33,3 +33,6 @@ hubs.md
 .DS_Store
 .idea
 /script/
+
+# OMC tooling session state
+.omc

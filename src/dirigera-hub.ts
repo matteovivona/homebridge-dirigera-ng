@@ -2,9 +2,9 @@ import os from 'os';
 import EventEmitter from 'events';
 import { Logger } from 'homebridge';
 import { createDirigeraClient, Device } from 'dirigera';
-import { Availability } from './Availability.js';
+import { Availability } from './availability.js';
 import { clearTimeout } from 'timers';
-import { ContextLogger, ILogger } from './Logger.js';
+import { ContextLogger, ILogger } from './logger.js';
 import { isNil, wait } from './common.js';
 import { calculateCodeChallenge, CODE_CHALLENGE_METHOD, generateCodeVerifier } from './auth.js';
 
@@ -34,7 +34,7 @@ export class DirigeraHub {
         return hub;
     }
 
-    private static async authenticate(ip: string, name: string | undefined,  logger: Logger, attempt = 1): Promise<string> {
+    private static async authenticate(ip: string, name: string | undefined,  logger: Logger): Promise<string> {
 
         const hubDesc = name ? `${name} (${ip})` : ip;
 
@@ -55,10 +55,13 @@ export class DirigeraHub {
         }).json<{ code: string }>();
 
         logger.info(`\nPress the Action Button on the bottom of your Dirigera Hub [${hubDesc}]\n`);
+        const MAX_ATTEMPTS = 12;
+        let attempt = 0;
         let accessToken;
         while (!accessToken) {
             try {
                 await wait(5000);
+                attempt++;
                 logger.debug(`authentication attempt ${attempt}`);
                 accessToken = (await got.post(`https://${ip}:8443/v1/oauth/token`, {
                     https: {
@@ -76,21 +79,23 @@ export class DirigeraHub {
                 Authentication token resolved. To avoid re-authenticating on each homebridge restart, add it to the hub configuration, e.g.:
                 {
                     "host": "${ip}",
-                    "token": "${accessToken}",
-                    ${name ? `"name": ${name}` : '...'}
+                    "token": "${accessToken}"${name ? `,\n                    "name": "${name}"` : ''}
                 }`);
 
             } catch (error) {
-                if ((<any>error).response.statusCode === 403) {
+                // `error.response` is absent for network-level failures (timeouts, ECONNREFUSED),
+                // so read the status code defensively.
+                const statusCode = (error as any)?.response?.statusCode;
+                if (attempt >= MAX_ATTEMPTS) {
+                    throw new Error(`Could not authenticate to hub [${hubDesc}]. Action button wasn't pressed.`);
+                }
+                if (statusCode === 403) {
+                    // The hub returns 403 until the action button is pressed - keep waiting.
                     if (attempt % 3 === 0) {
                         logger.info(`\nStill waiting for that Action Button [${hubDesc}]...\n`);
                     }
-                    attempt++;
-                    if (attempt === 12) {
-                        throw new Error(`Could not authenticate to hub [${hubDesc}]. Action button wasn't pressed.`);
-                    }
                 } else {
-                    return DirigeraHub.authenticate(ip, name, logger, attempt++);
+                    logger.debug(`authentication attempt ${attempt} failed: ${error}`);
                 }
             }
         }
@@ -156,8 +161,8 @@ export class DirigeraHub {
     on(event: 'availability', handler: (event: { available: boolean, error?: string }) => void): void;
     on(event: 'pong', handler: () => void): void;
     on(event: 'deviceStateChanged', handler: (event: DirigeraHub.DeviceStateChange) => void): void;
-    on(event: 'deviceAdded', handler: (event: Device) => void)
-    on(event: 'deviceRemoved', handler: (event: { deviceId: string, type: Device['deviceType'] }) => void);
+    on(event: 'deviceAdded', handler: (event: Device) => void): void;
+    on(event: 'deviceRemoved', handler: (event: { deviceId: string, type: Device['deviceType'] }) => void): void;
     on(event: 'availability' | 'pong' | 'deviceStateChanged' | 'deviceAdded' | 'deviceRemoved', handler: (event: any) => void) {
         this.emitter.on(event, handler);
     }
@@ -203,7 +208,7 @@ export class DirigeraHub {
     async getDevice(id: string): Promise<Device | undefined> {
         try {
             return await this.client.devices.get({ id });
-        } catch (error) {
+        } catch {
             return undefined;
         }
     }

@@ -2,9 +2,9 @@ import { Device } from 'dirigera';
 import { EnvironmentSensorAttributes } from 'dirigera/dist/src/types/device/EnvironmentSensor.js';
 import { PlatformAccessory, Service } from 'homebridge';
 import { isNumber, runAsync } from '../common.js';
-import { DirigeraHub } from '../DirigeraHub.js';
-import { DirigeraPlatform } from '../DirigeraPlatform.js';
-import { DirigeraDevice } from './DirigeraDevice.js';
+import { DirigeraHub } from '../dirigera-hub.js';
+import { DirigeraPlatform } from '../dirigera-platform.js';
+import { DirigeraDevice } from './dirigera-device.js';
 
 export class AirQualitySensor extends DirigeraDevice<EnvironmentSensorAttributes> {
 

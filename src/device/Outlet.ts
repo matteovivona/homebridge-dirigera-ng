@@ -3,10 +3,10 @@ import { LightAttributes } from 'dirigera/dist/src/types/device/Light.js';
 import { Outlet as _Outlet, OutletAttributes } from 'dirigera/dist/src/types/device/Outlet.js';
 import { PlatformAccessory } from 'homebridge';
 import { isBoolean } from '../common.js';
-import { DirigeraHub } from '../DirigeraHub.js';
-import { DirigeraPlatform } from '../DirigeraPlatform.js';
-import { DirigeraDevice } from './DirigeraDevice.js';
-import { Switch } from './Switch.js';
+import { DirigeraHub } from '../dirigera-hub.js';
+import { DirigeraPlatform } from '../dirigera-platform.js';
+import { DirigeraDevice } from './dirigera-device.js';
+import { Switch } from './switch.js';
 
 export class Outlet extends DirigeraDevice<OutletAttributes> {
 

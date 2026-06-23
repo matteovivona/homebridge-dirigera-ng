@@ -1,9 +1,9 @@
 import { XDevice } from '../dirigera.js';
-import { DirigeraPlatform } from '../DirigeraPlatform.js';
-import { DirigeraHub } from '../DirigeraHub.js';
+import { DirigeraPlatform } from '../dirigera-platform.js';
+import { DirigeraHub } from '../dirigera-hub.js';
 import { PlatformAccessory, Service } from 'homebridge';
 import { Device } from 'dirigera';
-import { ILogger } from '../Logger.js';
+import { ILogger } from '../logger.js';
 import { CommonDeviceAttributes } from 'dirigera/dist/src/types/device/Device.js';
 
 export abstract class DirigeraDevice<Attrs extends CommonDeviceAttributes = CommonDeviceAttributes> {
@@ -35,7 +35,7 @@ export abstract class DirigeraDevice<Attrs extends CommonDeviceAttributes = Comm
         status.setValue(this.available);
     }
 
-    abstract update(attributes: Attrs);
+    abstract update(attributes: Attrs): void;
 
     abstract close(): Promise<void>;
 

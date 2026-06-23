@@ -1,11 +1,11 @@
-import { DirigeraHub } from '../DirigeraHub.js';
+import { DirigeraHub } from '../dirigera-hub.js';
 import { PlatformAccessory } from 'homebridge';
 import { Device } from 'dirigera';
 import { LightAttributes } from 'dirigera/dist/src/types/device/Light.js';
-import { DirigeraPlatform } from '../DirigeraPlatform.js';
+import { DirigeraPlatform } from '../dirigera-platform.js';
 import { isBoolean, isNumber } from '../common.js';
-import { DirigeraDevice } from './DirigeraDevice.js';
-import { Switch } from './Switch.js';
+import { DirigeraDevice } from './dirigera-device.js';
+import { Switch } from './switch.js';
 
 export class Light extends DirigeraDevice<LightAttributes> {
 
@@ -71,37 +71,39 @@ export class Light extends DirigeraDevice<LightAttributes> {
 
         if (isNumber(device.attributes.colorTemperature)) {
 
-            let colorTemperature = device.attributes.colorTemperature;
-
-            let min;
-            let max;
-
+            // DIRIGERA reports color temperature in Kelvin; HomeKit uses mireds (1e6 / Kelvin).
+            // Warmer light => lower Kelvin => higher mired value. IKEA's min/max bounds are not
+            // guaranteed to be ordered, so normalise them before deriving the mired range.
+            let kelvinMin: number | undefined;
+            let kelvinMax: number | undefined;
             if (isNumber(device.attributes.colorTemperatureMin) && isNumber(device.attributes.colorTemperatureMax)) {
-                min = Math.max(device.attributes.colorTemperatureMin, device.attributes.colorTemperatureMax);
-                max = Math.min(device.attributes.colorTemperatureMin, device.attributes.colorTemperatureMax);
-                colorTemperature = Math.max(min, colorTemperature);
-                colorTemperature = Math.min(max, colorTemperature);
+                kelvinMin = Math.min(device.attributes.colorTemperatureMin, device.attributes.colorTemperatureMax);
+                kelvinMax = Math.max(device.attributes.colorTemperatureMin, device.attributes.colorTemperatureMax);
             }
 
-            const value = 1_000_000 / colorTemperature;
+            const clampKelvin = (kelvin: number) => {
+                if (isNumber(kelvinMin) && isNumber(kelvinMax)) {
+                    return Math.min(Math.max(kelvin, kelvinMin), kelvinMax);
+                }
+                return kelvin;
+            };
 
-            this.service.getCharacteristic(platform.Characteristic.ColorTemperature)
-                .setValue(value)
-                .setProps({
-                    minValue: isNumber(min) ?  1_000_000 / min : undefined,
-                    maxValue: isNumber(max) ? 1_000_000 / max : undefined
-                })
+            const kelvin = clampKelvin(device.attributes.colorTemperature);
+
+            const characteristic = this.service.getCharacteristic(platform.Characteristic.ColorTemperature);
+            if (isNumber(kelvinMin) && isNumber(kelvinMax)) {
+                characteristic.setProps({
+                    minValue: Math.round(1_000_000 / kelvinMax),
+                    maxValue: Math.round(1_000_000 / kelvinMin)
+                });
+            }
+            characteristic
+                .setValue(Math.round(1_000_000 / kelvin))
                 .onSet(async (value, context) => {
-                    let colorTemperature = Math.round(1_000_000 / <number>value);
-                    if (isNumber(device.attributes.colorTemperatureMin)) {
-                        colorTemperature = Math.min(device.attributes.colorTemperatureMin, colorTemperature);
-                    }
-                    if (isNumber(device.attributes.colorTemperatureMax)) {
-                        colorTemperature = Math.max(device.attributes.colorTemperatureMax, colorTemperature);
-                    }
-                    device.attributes.colorTemperature = colorTemperature;
+                    const kelvin = clampKelvin(Math.round(1_000_000 / <number>value));
+                    device.attributes.colorTemperature = kelvin;
                     if (!context?.fromDirigera) {
-                        await hub.setDeviceAttributes(device.id, { colorTemperature } as LightAttributes)
+                        await hub.setDeviceAttributes(device.id, { colorTemperature: kelvin } as LightAttributes)
                     }
                 });
         }
@@ -132,7 +134,7 @@ export class Light extends DirigeraDevice<LightAttributes> {
         }
         if (isNumber(attributes.colorTemperature)) {
             this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
-                .setValue(1_000_000 / attributes.colorTemperature, { fromDirigera: true });
+                .updateValue(Math.round(1_000_000 / attributes.colorTemperature));
         }
     }
 

@@ -1,10 +1,9 @@
 import { Device } from 'dirigera';
 import { CommonControllerAttributes } from 'dirigera/dist/src/types/device/Controller.js';
 import { PlatformAccessory } from 'homebridge';
-import { isBoolean } from '../common.js';
-import { DirigeraHub } from '../DirigeraHub.js';
-import { DirigeraPlatform } from '../DirigeraPlatform.js';
-import { DirigeraDevice } from './DirigeraDevice.js';
+import { DirigeraHub } from '../dirigera-hub.js';
+import { DirigeraPlatform } from '../dirigera-platform.js';
+import { DirigeraDevice } from './dirigera-device.js';
 
 export class Controller extends DirigeraDevice<CommonControllerAttributes> {
 
@@ -15,17 +14,12 @@ export class Controller extends DirigeraDevice<CommonControllerAttributes> {
     private constructor(platform: DirigeraPlatform, hub: DirigeraHub, accessory: PlatformAccessory, device: Device) {
         super(platform, hub, accessory, device, accessory.getService(platform.Service.StatelessProgrammableSwitch) ?? accessory.addService(platform.Service.StatelessProgrammableSwitch));
 
-        // this.service.addCharacteristic(platform.Characteristic.ProgrammableSwitchEvent);
-
+        // TODO: wire StatelessProgrammableSwitch ProgrammableSwitchEvent to controller button presses.
+        // Not yet registered in the device registry (src/device/index.ts).
     }
 
     update(attributes: CommonControllerAttributes) {
         this.device.attributes = attributes;
-        if (isBoolean(attributes.isOn)) {
-            this.accessory.getService(this.platform.Service.Switch)!
-                .getCharacteristic(this.platform.Characteristic.On)
-                .setValue(attributes.isOn, { fromDirigera: true });
-        }
     }
 
     async close(){

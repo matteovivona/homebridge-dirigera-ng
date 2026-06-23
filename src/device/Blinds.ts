@@ -1,10 +1,10 @@
-import { DirigeraHub } from '../DirigeraHub.js';
+import { DirigeraHub } from '../dirigera-hub.js';
 import { PlatformAccessory, Service } from 'homebridge';
 import { Device } from 'dirigera';
-import { DirigeraPlatform } from '../DirigeraPlatform.js';
+import { DirigeraPlatform } from '../dirigera-platform.js';
 import { BlindsAttributes } from 'dirigera/dist/src/types/device/Blinds.js';
 import { isNumber } from '../common.js';
-import { DirigeraDevice } from './DirigeraDevice.js';
+import { DirigeraDevice } from './dirigera-device.js';
 
 const isBlindState = (value: any): value is BlindsAttributes['blindsState'] =>
     value === 'stopped' || value === 'up' || value === 'down';

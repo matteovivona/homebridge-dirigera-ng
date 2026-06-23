@@ -16,8 +16,8 @@ export class Availability {
         return this._available;
     }
 
-    error() {
-        return this.error;
+    error(): string | Error | undefined {
+        return this._error;
     }
 
     on(event: 'change', handler: (available: boolean, error?: string | Error) => void): Detachable {

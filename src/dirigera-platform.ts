@@ -8,10 +8,10 @@ import {
     Service
 } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, PLUGIN_VERSION } from './settings';
-import { DirigeraHub } from './DirigeraHub.js';
+import { DirigeraHub } from './dirigera-hub.js';
 import { Devices } from './device/index.js';
 import { asyncForEach, cleanArrayAsync, cleanMapAsync, isString, isUndefined, spliceFirstMatch } from './common.js';
-import { DirigeraDevice } from './device/DirigeraDevice.js';
+import { DirigeraDevice } from './device/dirigera-device.js';
 import { CommonDeviceAttributes } from 'dirigera/dist/src/types/device/Device.js';
 import { Device } from 'dirigera';
 

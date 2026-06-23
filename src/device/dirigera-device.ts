@@ -32,7 +32,7 @@ export abstract class DirigeraDevice<Attrs extends CommonDeviceAttributes = Comm
         if (!status) {
             status = this.service.addCharacteristic(platform.Characteristic.StatusActive);
         }
-        status.setValue(this.available);
+        status.updateValue(this.available);
     }
 
     abstract update(attributes: Attrs): void;

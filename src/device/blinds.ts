@@ -23,7 +23,7 @@ export class Blinds extends DirigeraDevice<BlindsAttributes> {
         if (isNumber(device.attributes.batteryPercentage)) {
             this.battery = accessory.getService(platform.Service.Battery) ?? accessory.addService(platform.Service.Battery);
             this.battery.getCharacteristic(platform.Characteristic.BatteryLevel)
-                .setValue(device.attributes.batteryPercentage)
+                .updateValue(device.attributes.batteryPercentage)
                 .onGet(() => this.device.attributes.batteryPercentage as number);
         }
 
@@ -37,11 +37,11 @@ export class Blinds extends DirigeraDevice<BlindsAttributes> {
                 });
 
             this.service.getCharacteristic(platform.Characteristic.PositionState)
-                .setValue(device.attributes.blindsState === 'down' ? 0 : device.attributes.blindsState === 'up' ? 1 : 2)
+                .updateValue(device.attributes.blindsState === 'down' ? 0 : device.attributes.blindsState === 'up' ? 1 : 2)
                 .onGet(() => this.device.attributes.blindsState === 'down' ? 0 : this.device.attributes.blindsState === 'up' ? 1 : 2);
 
             this.service.getCharacteristic(platform.Characteristic.TargetPosition)
-                .setValue(device.attributes.blindsTargetLevel as number)
+                .updateValue(device.attributes.blindsTargetLevel as number)
                 .onSet(async value => {
                     const blindsTargetLevel = 100 - <number>value;
                     await hub.setDeviceAttributes(device.id, { blindsTargetLevel } as BlindsAttributes);
@@ -49,7 +49,7 @@ export class Blinds extends DirigeraDevice<BlindsAttributes> {
                 });
 
             this.service.getCharacteristic(platform.Characteristic.CurrentPosition)
-                .setValue(100 - <number>device.attributes.blindsCurrentLevel)
+                .updateValue(100 - <number>device.attributes.blindsCurrentLevel)
                 .onGet(() => 100 - <number>this.device.attributes.blindsCurrentLevel);
         }
     }

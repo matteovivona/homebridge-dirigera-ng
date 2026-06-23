@@ -18,13 +18,11 @@ export class Switch extends DirigeraDevice<LightAttributes> {
         super(platform, hub, accessory, device, accessory.getService(platform.Service.Switch) ?? accessory.addService(platform.Service.Switch));
 
         this.service.getCharacteristic(platform.Characteristic.On)
-            .setValue(this.device.attributes.isOn as boolean)
-            .onSet(async (value, context) => {
+            .updateValue(this.device.attributes.isOn as boolean)
+            .onSet(async (value) => {
                 const isOn = !!value;
                 this.device.attributes.isOn = isOn;
-                if (!context?.fromDirigera) {
-                    await hub.setDeviceAttributes(device.id, { isOn } as LightAttributes);
-                }
+                await hub.setDeviceAttributes(device.id, { isOn } as LightAttributes);
             });
 
     }
@@ -34,7 +32,7 @@ export class Switch extends DirigeraDevice<LightAttributes> {
         if (isBoolean(attributes.isOn)) {
             this.accessory.getService(this.platform.Service.Switch)!
                 .getCharacteristic(this.platform.Characteristic.On)
-                .setValue(attributes.isOn, { fromDirigera: true });
+                .updateValue(attributes.isOn);
         }
     }
 

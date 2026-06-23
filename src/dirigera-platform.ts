@@ -131,7 +131,6 @@ export class DirigeraPlatform implements DynamicPlatformPlugin {
             const hub = this.hubs[hubId];
 
             const devices = await hub.listDevices();
-            // console.log(`devices [${JSON.stringify(devices)}]`);
             for (const device of devices) {
                 await this.registerDevice(hub, device);
             }

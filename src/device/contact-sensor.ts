@@ -18,12 +18,12 @@ export class ContactSensor extends DirigeraDevice<OpenCloseSensorAttributes> {
         super(platform, hub, accessory, device, accessory.getService(platform.Service.ContactSensor) ?? accessory.addService(platform.Service.ContactSensor));
 
         this.service.getCharacteristic(platform.Characteristic.ContactSensorState)
-            .setValue(!!this.device.attributes.isOpen)
+            .updateValue(!!this.device.attributes.isOpen)
 
         if (isNumber(device.attributes.batteryPercentage)) {
             this.battery = accessory.getService(platform.Service.Battery) ?? accessory.addService(platform.Service.Battery);
             this.battery.getCharacteristic(platform.Characteristic.BatteryLevel)
-                .setValue(device.attributes.batteryPercentage)
+                .updateValue(device.attributes.batteryPercentage)
         }
     }
 
@@ -35,12 +35,12 @@ export class ContactSensor extends DirigeraDevice<OpenCloseSensorAttributes> {
         if (isBoolean(attributes.isOpen)) {
             this.accessory.getService(this.platform.Service.ContactSensor)!
                 .getCharacteristic(this.platform.Characteristic.ContactSensorState)
-                .setValue(attributes.isOpen);
+                .updateValue(attributes.isOpen);
         }
         if (isNumber(attributes.batteryPercentage) && this.battery) {
             this.device.attributes.batteryPercentage = attributes.batteryPercentage;
             this.battery.getCharacteristic(this.platform.Characteristic.BatteryLevel)
-                .setValue(attributes.batteryPercentage)
+                .updateValue(attributes.batteryPercentage)
         }
     }
 

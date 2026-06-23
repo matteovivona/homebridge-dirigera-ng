@@ -21,51 +21,43 @@ export class Light extends DirigeraDevice<LightAttributes> {
         super(platform, hub, accessory, device, accessory.getService(platform.Service.Lightbulb) ?? accessory.addService(platform.Service.Lightbulb));
 
         this.service.getCharacteristic(platform.Characteristic.On)
-            .setValue(this.device.attributes.isOn as boolean)
-            .onSet(async (value, context) => {
+            .updateValue(this.device.attributes.isOn as boolean)
+            .onSet(async (value) => {
                 const isOn = !!value;
                 this.device.attributes.isOn = isOn;
-                if (!context?.fromDirigera) {
-                    await hub.setDeviceAttributes(device.id, { isOn } as LightAttributes);
-                }
+                await hub.setDeviceAttributes(device.id, { isOn } as LightAttributes);
             });
 
         if (isNumber(device.attributes.lightLevel)) {
             this.service.getCharacteristic(platform.Characteristic.Brightness)
-                .setValue(device.attributes.lightLevel)
-                .onSet(async (value, context) => {
+                .updateValue(device.attributes.lightLevel)
+                .onSet(async (value) => {
                     const lightLevel = value as number;
                     this.device.attributes.lightLevel = lightLevel
                     const { colorTemperature, colorSaturation } = this.device.attributes;
-                    if (!context?.fromDirigera) {
-                        await hub.setDeviceAttributes(device.id, { lightLevel, colorSaturation, colorTemperature } as LightAttributes);
-                    }
+                    await hub.setDeviceAttributes(device.id, { lightLevel, colorSaturation, colorTemperature } as LightAttributes);
                 });
         }
 
         if (isNumber(device.attributes.colorHue)) {
             this.service.getCharacteristic(platform.Characteristic.Hue)
-                .setValue(device.attributes.colorHue)
-                .onSet(async (value, context) => {
+                .updateValue(device.attributes.colorHue)
+                .onSet(async (value) => {
                     const colorHue = value as number;
                     this.device.attributes.colorHue = colorHue;
                     const { colorSaturation } = this.device.attributes;
-                    if (!context?.fromDirigera) {
-                        await hub.setDeviceAttributes(device.id, { colorHue, colorSaturation } as LightAttributes);
-                    }
+                    await hub.setDeviceAttributes(device.id, { colorHue, colorSaturation } as LightAttributes);
                 });
         }
 
         if (isNumber(device.attributes.colorSaturation)) {
             this.service.getCharacteristic(platform.Characteristic.Saturation)
-                .setValue(device.attributes.colorSaturation * 100)
-                .onSet(async (value, context) => {
+                .updateValue(device.attributes.colorSaturation * 100)
+                .onSet(async (value) => {
                     const colorSaturation = <number>value / 100;
                     this.device.attributes.colorSaturation = colorSaturation;
                     const { colorHue } = this.device.attributes;
-                    if (!context?.fromDirigera) {
-                        await hub.setDeviceAttributes(device.id, { colorHue, colorSaturation } as LightAttributes);
-                    }
+                    await hub.setDeviceAttributes(device.id, { colorHue, colorSaturation } as LightAttributes);
                 });
         }
 
@@ -98,13 +90,11 @@ export class Light extends DirigeraDevice<LightAttributes> {
                 });
             }
             characteristic
-                .setValue(Math.round(1_000_000 / kelvin))
-                .onSet(async (value, context) => {
+                .updateValue(Math.round(1_000_000 / kelvin))
+                .onSet(async (value) => {
                     const kelvin = clampKelvin(Math.round(1_000_000 / <number>value));
                     device.attributes.colorTemperature = kelvin;
-                    if (!context?.fromDirigera) {
-                        await hub.setDeviceAttributes(device.id, { colorTemperature: kelvin } as LightAttributes)
-                    }
+                    await hub.setDeviceAttributes(device.id, { colorTemperature: kelvin } as LightAttributes)
                 });
         }
 
@@ -118,19 +108,19 @@ export class Light extends DirigeraDevice<LightAttributes> {
         if (isBoolean(attributes.isOn)) {
             this.accessory.getService(this.platform.Service.Lightbulb)!
                 .getCharacteristic(this.platform.Characteristic.On)
-                .updateValue(attributes.isOn, { fromDirigera: true });
+                .updateValue(attributes.isOn);
         }
         if (isNumber(attributes.lightLevel)) {
             this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-                .updateValue(attributes.lightLevel, { fromDirigera: true });
+                .updateValue(attributes.lightLevel);
         }
         if (isNumber(attributes.colorHue)) {
             this.service.getCharacteristic(this.platform.Characteristic.Hue)
-                .updateValue(attributes.colorHue, { fromDirigera: true });
+                .updateValue(attributes.colorHue);
         }
         if (isNumber(attributes.colorSaturation)) {
             this.service.getCharacteristic(this.platform.Characteristic.Saturation)
-                .updateValue(attributes.colorSaturation * 100, { fromDirigera: true });
+                .updateValue(attributes.colorSaturation * 100);
         }
         if (isNumber(attributes.colorTemperature)) {
             this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)

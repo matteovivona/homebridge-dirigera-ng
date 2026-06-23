@@ -18,12 +18,12 @@ export class MotionSensor extends DirigeraDevice<XMotionSensorAttributes> {
         super(platform, hub, accessory, device, accessory.getService(platform.Service.MotionSensor) ?? accessory.addService(platform.Service.MotionSensor));
 
         this.service.getCharacteristic(platform.Characteristic.MotionDetected)
-            .setValue(!!this.device.attributes.isDetected);
+            .updateValue(!!this.device.attributes.isDetected);
 
         if (isNumber(this.device.attributes.batteryPercentage)) {
             this.battery = accessory.getService(platform.Service.Battery) ?? accessory.addService(platform.Service.Battery);
             this.battery.getCharacteristic(platform.Characteristic.BatteryLevel)
-                .setValue(this.device.attributes.batteryPercentage)
+                .updateValue(this.device.attributes.batteryPercentage)
         }
     }
 
@@ -35,11 +35,11 @@ export class MotionSensor extends DirigeraDevice<XMotionSensorAttributes> {
         if (isBoolean(attributes.isDetected)) {
             this.accessory.getService(this.platform.Service.MotionSensor)!
                 .getCharacteristic(this.platform.Characteristic.MotionDetected)
-                .setValue(attributes.isDetected);
+                .updateValue(attributes.isDetected);
         }
         if (isNumber(attributes.batteryPercentage) && this.battery) {
             this.battery.getCharacteristic(this.platform.Characteristic.BatteryLevel)
-                .setValue(attributes.batteryPercentage)
+                .updateValue(attributes.batteryPercentage)
         }
     }
 

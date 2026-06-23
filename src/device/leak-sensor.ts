@@ -17,12 +17,12 @@ export class LeakSensor extends DirigeraDevice<WaterSensorAttributes> {
         super(platform, hub, accessory, device, accessory.getService(platform.Service.LeakSensor) ?? accessory.addService(platform.Service.LeakSensor));
 
         this.service.getCharacteristic(platform.Characteristic.LeakDetected)
-            .setValue(!!this.device.attributes.waterLeakDetected)
+            .updateValue(!!this.device.attributes.waterLeakDetected)
 
         if (isNumber(device.attributes.batteryPercentage)) {
             this.battery = accessory.getService(platform.Service.Battery) ?? accessory.addService(platform.Service.Battery);
             this.battery.getCharacteristic(platform.Characteristic.BatteryLevel)
-                .setValue(device.attributes.batteryPercentage)
+                .updateValue(device.attributes.batteryPercentage)
         }
     }
 
@@ -33,11 +33,11 @@ export class LeakSensor extends DirigeraDevice<WaterSensorAttributes> {
         }
         if (isBoolean(attributes.waterLeakDetected)) {
             this.service.getCharacteristic(this.platform.Characteristic.LeakDetected)
-                .setValue(attributes.waterLeakDetected);
+                .updateValue(attributes.waterLeakDetected);
         }
         if (isNumber(attributes.batteryPercentage) && this.battery) {
             this.battery.getCharacteristic(this.platform.Characteristic.BatteryLevel)
-                .setValue(attributes.batteryPercentage);
+                .updateValue(attributes.batteryPercentage);
         }
     }
 

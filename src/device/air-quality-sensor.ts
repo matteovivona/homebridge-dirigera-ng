@@ -21,36 +21,36 @@ export class AirQualitySensor extends DirigeraDevice<EnvironmentSensorAttributes
         const pm25 = this.device.attributes.currentPM25;
 
         this.service.getCharacteristic(platform.Characteristic.AirQuality)
-            .setValue(pm25ToQuality(pm25));
+            .updateValue(pm25ToQuality(pm25));
 
         if (isNumber(pm25)) {
             this.service.getCharacteristic(platform.Characteristic.PM2_5Density)
-                .setValue(pm25)
+                .updateValue(pm25)
                 .onSet(async (value) => {
                     const currentPM25 = value as number;
                     this.device.attributes.currentPM25 = currentPM25;
                     runAsync(() => {
                         this.service.getCharacteristic(platform.Characteristic.AirQuality)
-                            .setValue(pm25ToQuality(currentPM25));
+                            .updateValue(pm25ToQuality(currentPM25));
                     });
                 });
         }
 
         if (isNumber(device.attributes.vocIndex)) {
             this.service.getCharacteristic(platform.Characteristic.VOCDensity)
-                .setValue(device.attributes.vocIndex);
+                .updateValue(device.attributes.vocIndex);
         }
 
         if (isNumber(device.attributes.currentTemperature)) {
             this.temperature = accessory.getService(platform.Service.TemperatureSensor) ?? accessory.addService(platform.Service.TemperatureSensor);
             this.temperature.getCharacteristic(platform.Characteristic.CurrentTemperature)
-                .setValue(device.attributes.currentTemperature)
+                .updateValue(device.attributes.currentTemperature)
         }
 
         if (isNumber(device.attributes.currentRH)) {
             this.humidity = accessory.getService(platform.Service.HumiditySensor) ?? accessory.addService(platform.Service.HumiditySensor);
             this.humidity.getCharacteristic(platform.Characteristic.CurrentRelativeHumidity)
-                .setValue(device.attributes.currentRH)
+                .updateValue(device.attributes.currentRH)
         }
     }
 
@@ -61,17 +61,17 @@ export class AirQualitySensor extends DirigeraDevice<EnvironmentSensorAttributes
         };
         if (isNumber(attributes.currentPM25)) {
             this.service.getCharacteristic(this.platform.Characteristic.AirQuality)
-                .setValue(pm25ToQuality(attributes.currentPM25));
+                .updateValue(pm25ToQuality(attributes.currentPM25));
             this.service.getCharacteristic(this.platform.Characteristic.PM2_5Density)
-                .setValue(attributes.currentPM25);
+                .updateValue(attributes.currentPM25);
         }
         if (isNumber(attributes.vocIndex)) {
             this.service.getCharacteristic(this.platform.Characteristic.VOCDensity)
-                .setValue(attributes.vocIndex);
+                .updateValue(attributes.vocIndex);
         }
         if (isNumber(attributes.currentTemperature) && this.temperature) {
             this.temperature.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
-                .setValue(attributes.currentTemperature);
+                .updateValue(attributes.currentTemperature);
         }
         if (isNumber(attributes.currentRH) && this.humidity) {
             this.humidity.getCharacteristic(this.platform.Characteristic.CurrentRelativeHumidity)

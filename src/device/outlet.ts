@@ -22,13 +22,11 @@ export class Outlet extends DirigeraDevice<OutletAttributes> {
         super(platform, hub, accessory, device, accessory.getService(platform.Service.Outlet) ?? accessory.addService(platform.Service.Outlet));
 
         this.service.getCharacteristic(platform.Characteristic.On)
-            .setValue(this.device.attributes.isOn as boolean)
-            .onSet(async (value, context) => {
+            .updateValue(this.device.attributes.isOn as boolean)
+            .onSet(async (value) => {
                 const isOn = !!value;
                 this.device.attributes.isOn = isOn;
-                if (!context?.fromDirigera) {
-                    await hub.setDeviceAttributes(device.id, { isOn } as LightAttributes);
-                }
+                await hub.setDeviceAttributes(device.id, { isOn } as LightAttributes);
             });
 
     }
@@ -38,7 +36,7 @@ export class Outlet extends DirigeraDevice<OutletAttributes> {
         if (isBoolean(attributes.isOn)) {
             this.accessory.getService(this.platform.Service.Outlet)!
                 .getCharacteristic(this.platform.Characteristic.On)
-                .setValue(attributes.isOn, { fromDirigera: true });
+                .updateValue(attributes.isOn);
         }
     }
 

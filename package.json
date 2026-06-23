@@ -39,7 +39,6 @@
   },
   "main": "dist/index.js",
   "files": [
-    "tsconfig.json",
     "LICENSE",
     "README.md",
     "CHANGELOG.md",

@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [latest, main]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         # the Node.js versions to build on
-        node-version: [20.x, 22.x, 24.x]
+        node-version: [22.x, 24.x]
 
     steps:
       - uses: actions/checkout@v4

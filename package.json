@@ -1,6 +1,6 @@
 {
   "name": "homebridge-dirigera-ng",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "matteovivona <matteo@trustlayer.io>",
   "type": "commonjs",
   "publishConfig": {
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/matteovivona/homebridge-dirigera-ng#readme",
   "engines": {
-    "node": "^20.9.0 || ^22.18.0 || ^24.0.0",
+    "node": "^22.18.0 || ^24.0.0",
     "homebridge": "^1.6.0 || ^2.0.0-beta.0"
   },
   "exports": {

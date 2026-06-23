@@ -110,4 +110,4 @@ plugin to expose such a device as a plain switch.
 
 ## License
 
-[Apache-2.0](./LICENSE)
+[MIT](./LICENSE)

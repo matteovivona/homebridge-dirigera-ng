@@ -9,7 +9,7 @@
   },
   "displayName": "Homebridge DIRIGERA NG",
   "description": "IKEA DIRIGERA Homebridge Plugin (maintained fork)",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "keywords": [
     "homebridge-plugin",
     "homebridge",

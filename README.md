@@ -8,7 +8,7 @@
 
 Homebridge plugin for the **IKEA DIRIGERA** hub.
 
-[![Build](https://github.com/matteovivona/homebridge-dirigera-ng/actions/workflows/build.yml/badge.svg?branch=latest)](https://github.com/matteovivona/homebridge-dirigera-ng/actions/workflows/build.yml)
+[![Build](https://github.com/matteovivona/homebridge-dirigera-ng/actions/workflows/build.yml/badge.svg)](https://github.com/matteovivona/homebridge-dirigera-ng/actions/workflows/build.yml)
 [![npm](https://img.shields.io/npm/v/homebridge-dirigera-ng.svg)](https://www.npmjs.com/package/homebridge-dirigera-ng)
 [![npm downloads](https://img.shields.io/npm/dt/homebridge-dirigera-ng.svg)](https://www.npmjs.com/package/homebridge-dirigera-ng)
 

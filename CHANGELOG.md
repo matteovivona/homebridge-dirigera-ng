@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.1](https://github.com/matteovivona/homebridge-dirigera-ng/compare/v1.1.0...v1.1.1) (2026-10-29)
+
+### Security
+
+* Updated dev dependencies and pnpm overrides to resolve open Dependabot alerts ([#3](https://github.com/matteovivona/homebridge-dirigera-ng/pull/3)).
+
 ## Unreleased
 
 This release marks the start of the maintained **`homebridge-dirigera-ng`** fork of the
